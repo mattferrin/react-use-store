@@ -1,9 +1,9 @@
 import React from "react";
-import { useSharedCounts } from "../store/stores/useStaredCuntsStore";
+import { useSharedCountsStore } from "../store/stores/useSharedCountsStore";
 
 export const Component2: React.FC<unknown> = function () {
   console.log("Component_2");
-  const [e, setAllCounts] = useSharedCounts((state) => state.b.d.e);
+  const [e, setAllCounts] = useSharedCountsStore((state) => state.b.d.e);
   console.log({ e });
   return (
     <>
