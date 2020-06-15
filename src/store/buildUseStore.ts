@@ -2,13 +2,13 @@ import { useEffect, useState, Dispatch } from "react";
 
 class ExhaustiveReturns {}
 
-type SetStoreInput<State> = (t: State) => State;
+type SetStoreInput<State> = (state: State) => State;
 export type SetStore<State> = (
-  input: SetStoreInput<State>
+  newValue: SetStoreInput<State>
 ) => ExhaustiveReturns;
 
 type UseStoreInput<State> = (state: State) => unknown;
-type UseStoreOutput<State> = [State, SetStore<State>];
+type UseStoreOutput<State> = [unknown, SetStore<State>];
 type BuildUseStoreOutput<State> = (
   initialValue: UseStoreInput<State>
 ) => UseStoreOutput<State>;
@@ -23,23 +23,34 @@ export function buildUseStore<State>(
 ): BuildUseStoreOutput<State> {
   let value = initialValue;
   let forceUpdates: Dispatch<State>[] = [];
+  let selectors: Dispatch<State>[] = [];
 
-  return () => {
+  return (selector) => {
     const [, forceUpdate] = useState();
     useEffect(() => {
       if (!forceUpdates.includes(forceUpdate)) {
         forceUpdates.push(forceUpdate);
       }
+      if (!selectors.includes(selector)) {
+        selectors.push(selector);
+      }
       return () => {
         forceUpdates = forceUpdates.filter((x) => x !== forceUpdate);
+        selectors = selectors.filter((x) => x !== selector);
       };
-    }, [forceUpdate]);
+    }, [forceUpdate, selector]);
 
     return [
-      value,
+      selector(value),
       (newValue) => {
+        const nextValue = newValue(value);
+        forceUpdates.forEach((x, i) => {
+          if (selectors[i](nextValue) !== selectors[i](value)) {
+            console.log({ i });
+            x(newValue(value));
+          }
+        });
         value = newValue(value);
-        forceUpdates.forEach((x) => x(newValue(value)));
         return new ExhaustiveReturns();
       },
     ];

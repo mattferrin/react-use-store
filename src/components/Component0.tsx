@@ -1,16 +1,12 @@
 import React from "react";
-import { buildUseStore } from "../stores/buildUseStore";
-
-export let useSharedCounts = buildUseStore({
-  a: 0,
-  b: { c: 0, d: { e: 0, f: 0 } },
-});
+import { useSharedCounts } from "../store/stores/useStaredCuntsStore";
 
 export const Component0: React.FC<unknown> = function () {
   console.log("Component_0");
-  const [allCounts, setAllCounts] = useSharedCounts((state) => {
-    return state.b.d;
+  const [a, setAllCounts] = useSharedCounts((state) => {
+    return state.a;
   });
+  console.log({ a });
   return (
     <>
       <div>Component 0</div>
@@ -21,7 +17,7 @@ export const Component0: React.FC<unknown> = function () {
       >
         Click 0
       </button>
-      <div>{JSON.stringify({ allCounts }, null, 2)}</div>
+      <div>{JSON.stringify({ a }, null, 2)}</div>
     </>
   );
 };
