@@ -7,11 +7,11 @@ export type SetStore<State> = (
   newValue: SetStoreInput<State>
 ) => ExhaustiveReturns;
 
-type UseStoreInput<State> = (state: State) => unknown;
-type UseStoreOutput<State> = [unknown, SetStore<State>];
-type BuildUseStoreOutput<State> = (
-  initialValue: UseStoreInput<State>
-) => UseStoreOutput<State>;
+type UseStoreInput<State, SubState> = (state: State) => SubState;
+type UseStoreOutput<State, SubState> = [SubState, SetStore<State>];
+type BuildUseStoreOutput<State> = <SubState>(
+  initialValue: UseStoreInput<State, SubState>
+) => UseStoreOutput<State, SubState>;
 
 /**
  * @param Initial value.
